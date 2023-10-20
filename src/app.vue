@@ -6,6 +6,9 @@ NuxtLayout
 </template>
 
 <script setup lang="ts">
+import { provideClient as provideAppwriteClient } from '~/api/appwrite/client';
+
+provideAppwriteClient()
 
 useHead({
   meta: [
