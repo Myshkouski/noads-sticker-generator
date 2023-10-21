@@ -12,23 +12,24 @@
     div 
       .py-12.space-y-8
         //- h3.px-4.text-2xl Preview
-        .carousel.space-x-4.max-w-full
-          .px-4
-            .shadow-xl.rounded-2xl.join(ref="sticker" class="w-[44em]")
-              .join-item.p-8.flex.flex-col.justify-end.transition-colors(:class="bgColorClass")
-                p.text-4xl.text-white
-                  | NO
-                  br
-                  | ADS
-              .join-item.p-8.bg-white
-                p.text-4xl.transition-colors(:class="textColorClass" style="white-space: pre-wrap")  {{ text }}
-              .join-item.p-8.flex.flex-col.justify-end.bg-white
-                .space-y-2(class="min-w-[6rem]")
-                  p.text-center.text-sm.text-primary-content
-                    | создать
+        .w-full.relative.carousel-wrapper.overflow-hidden
+          .carousel.space-x-4.max-w-full
+            .px-4
+              .shadow-xl.rounded-2xl.join(ref="sticker" class="w-[44em]")
+                .join-item.p-8.flex.flex-col.justify-end.transition-colors(:class="bgColorClass")
+                  p.text-4xl.text-white
+                    | NO
                     br
-                    | стикер
-                  img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode" alt="QR Code")
+                    | ADS
+                .join-item.p-8.bg-white
+                  p.text-4xl.transition-colors(:class="textColorClass" style="white-space: pre-wrap")  {{ text }}
+                .join-item.p-8.flex.flex-col.justify-end.bg-white
+                  .space-y-2(class="min-w-[6rem]" :class="{ 'opacity-0': !qrCode }")
+                    p.text-center.text-sm.text-primary-content
+                      | создать
+                      br
+                      | стикер
+                    img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode" alt="QR Code")
               
     div
       .space-y-16
@@ -37,25 +38,30 @@
           .space-y-4.w-full
             .flex.justify-between.items-center.px-4
               h3.text-xl Color
-              span.text-xl {{ activeColor }}
-            .max-w-full.carousel.space-x-4.px-4
-              div(v-for="color in colors" :key="color")
-                //- input.hidden(type="radio" :value="color" v-model="activeColor" :id="color")
-                button.btn.btn-circle.block(
-                  :class="getColorClass('bg', color, activeColorVariant) + (activeColor == color ? ' border-2 border-slate-100' : '')"
-                  @click="activeColor = color"
-                )
+              span.text-xl.text-slate-500 {{ activeColor }}
+            .w-full.relative.carousel-wrapper.overflow-hidden
+              .max-w-full.carousel.space-x-4.px-4
+                .my-2(v-for="color in colors" :key="color")
+                  button.btn-circle.shadow-xl(
+                    :class="' ring ring-offset-2 ring-offset-base-100 hover:ring-neutral hover:ring-offset-4 transition-all ' + getColorClass('bg', color, activeColorVariant) + (activeColor == color ? ' ring-neutral ' : ' ring-transparent ')"
+                    @click="activeColor = color"
+                  )
           .space-y-4.px-4
             .flex.justify-between.items-center
               h3.text-xl Color variant
-              span.text-xl {{ activeColorVariant }}
+              span.text-xl.text-slate-500 {{ activeColorVariant }}
             div.max-w-none(class="md:max-w-lg")
-              input.range(type="range" name="colorVariant" :min="min" :step="step" :max="max" v-model="activeColorVariant")
-              .flex.justify-between.text-xs(class="px-2.5")
-                span(v-for="i in steps + 1") |
+              input.range(
+                type="range" 
+                name="colorVariant" 
+                :min="min" :step="step" :max="max" 
+                v-model="activeColorVariant"
+              )
+              .flex.justify-between.text-xs.px-2
+                span(v-for="i in steps + 1" class="px-0.5") |
         ClientOnly
           .px-4.space-y-4(class="sm:space-x-4 sm:space-y-0")
-            button.btn.px-8.w-full(
+            button.btn.btn-neutral.px-8.w-full(
               v-if="isShareSupported"
               @click.prevent="onShare" 
               class="sm:w-auto"
@@ -78,12 +84,18 @@
 </template>
 
 <script setup lang="ts">
-
-import { useQRCode } from '@vueuse/integrations/useQRCode'
+import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
 
-const link = ref("https://bit.ly/3Rz9F1S")
-const qrCode = useQRCode(link)
+const { data: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
+
+const qrCodeLink = computed(() => {
+  const post = unref(qrCodeLinkPost)
+  const link = post?.content
+  return link
+})
+
+const qrCode = useQrCode(qrCodeLink)
 
 const sticker = ref<HTMLElement>()
 
@@ -173,6 +185,50 @@ const secondaryTextColorClass = computed(() => {
 const bgColorClass = useColorClass('bg', activeColor, activeColorVariant)
 const borderColorClass = useColorClass('border', activeColor, activeColorVariant)
 
+const hexActiveColorGradientFrom = computed(() => {
+  const activeColorValue = unref(activeColor)
+  const color = { ...tailwindColors }[activeColorValue];
+  if (!color) return null
+  if (typeof color == 'string') return color
+  const colorVariant = colorVariants.at(0)
+  if (!colorVariant) return null
+  const twColorVariants = ({ ...color } as { [key: number]: string })
+  return twColorVariants[colorVariant];
+})
+
+const hexActiveColorGradientTo = computed(() => {
+  const activeColorValue = unref(activeColor)
+  const color = { ...tailwindColors }[activeColorValue];
+  if(!color) return null
+  if (typeof color == 'string') return color
+  const colorVariant = colorVariants.at(-1)
+  if (!colorVariant) return null
+  const twColorVariants = ({ ...color } as { [key: number]: string })
+  return twColorVariants[colorVariant];
+})
+
+const hexActiveColor = computed(() => {
+  const activeColorValue = unref(activeColor)
+  const activeColorVariantValue = unref(activeColorVariant)
+  const color = { ...tailwindColors }[activeColorValue];
+  if (!color) return null
+  if (typeof color == 'string') return color
+  const colorVariants = ({ ...color } as { [key: number]: string })
+  const colorVariant = colorVariants[activeColorVariantValue] || null
+  return colorVariant
+})
+
+const hslActiveColor = computed(() => {
+  const hexActiveColorValue = unref(hexActiveColor)
+  if (!hexActiveColorValue) return null
+  const { h, s, l } = hexToHSL(hexActiveColorValue)
+  return [
+    h * 360, 
+    s * 100 + '%',
+    l * 100 + '%', 
+  ].join(' ')
+})
+
 const dataURLtoFile = (dataUrl: string, filename: string) => {
   const arr = dataUrl.split(',')
   const mime = arr[0]?.match(/:(.*?);/)?.[1]
@@ -191,6 +247,48 @@ const dataURLtoFile = (dataUrl: string, filename: string) => {
 
 body > div:last-child > span + img {
   display: inline !important;
+}
+
+</style>
+
+<style scoped lang="sass">
+
+@mixin carousel-shadow
+  content: ""
+  display: block
+  position: absolute
+  top: 0
+  width: 0
+  height: 100%
+  box-shadow: 0rem 0px theme('spacing.4') theme('spacing.4') hsl(var(--b1))
+
+.carousel-wrapper::before
+  @include carousel-shadow
+  left: 0
+.carousel-wrapper::after
+  @include carousel-shadow
+  right: 0
+
+@screen md 
+  .carousel-wrapper
+    &::before, &::after
+      visibility: hidden
+
+</style>
+
+<style scoped>
+
+input[type=range]::-webkit-slider-runnable-track {
+  appearance: none;
+  background: linear-gradient(to right, v-bind(hexActiveColorGradientFrom), v-bind(hexActiveColorGradientTo));
+  /* --range-shdw: v-bind(hslActiveColor); */
+  transition: all .5s;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  background-color: v-bind(hexActiveColor);
+  transition: all .5s;
 }
 
 </style>
