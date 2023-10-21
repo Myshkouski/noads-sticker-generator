@@ -7,8 +7,8 @@
     slot
 
   .flex-1.bg-base-200
-    footer.footer.p-12.text-neutral-content
-      .container.m-auto.px-4
+    footer.footer.text-neutral-content
+      .px-4.py-12.container.m-auto
         //- .w-full.flex.justify-between.px-4
         .w-full.grid.gap-x-8.gap-y-4(class="grid-cols-[1fr_min-content]")
           header.footer-title.self-start Social
