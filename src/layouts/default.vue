@@ -8,28 +8,24 @@
 
   .flex-1.bg-base-200
     footer.footer.p-12.text-neutral-content
-      .container.m-auto.flex.justify-between.px-4
-        aside.space-y-4
-          header.footer-title DEVELOPED BY
-          ClientOnly
-            GithubRepoDeveloper(:profile="githubProfile")
-          DevOnly
+      .container.m-auto.px-4
+        //- .w-full.flex.justify-between.px-4
+        .w-full.grid.gap-x-8.gap-y-4(class="grid-cols-[1fr_min-content]")
+          header.footer-title.self-start Social
+          header.footer-title.self-start DEVELOPED BY
+          //- DevOnly
             p githubProfileState: {{ githubProfileState }}
             p githubRepoState: {{ githubRepoState }}
-        nav.space-y-4
-          header.footer-title Social
-          .grid.grid-flow-col.gap-4.text-xl
-            NuxtLink(v-for="link in socialLinks" :to="link.url" target="_blank" rel="external")
-              Icon(:name="link.icon" size="1.75rem")
+          .self-center
+            SocialLinkIcons(:links="socialLinks")
+          .self-center
+            ClientOnly
+              GithubRepoDeveloper(:profile="githubProfile")
 
 </template>
 
 <script setup lang="ts">
-
-interface SocialLink {
-  url: string
-  icon: string
-}
+import type { SocialLink } from '~/models'
 
 const githubRepoName = computed(() => "Myshkouski/noads-sticker-generator")
 const githubRepoState = useGithubRepo(githubRepoName)
@@ -40,7 +36,6 @@ const githubRepoOwner = computed(() => {
 })
 const githubRepoOwnerLogin = computed(() => {
   const login = unref(githubRepoOwner)?.login
-  console.debug( "login: " + login)
   return login
 })
 
