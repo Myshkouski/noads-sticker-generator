@@ -1,28 +1,26 @@
 <template lang="pug">
 
-header
+.flex.flex-col.min-h-screen
+  header
 
-main
-  slot
+  main
+    slot
 
-footer.footer.p-12.bg-base-300.text-neutral-content
-  .container.m-auto.flex.justify-between
-    aside.space-y-4
-      header.footer-title DEVELOPED BY
-      .flex.items-center.space-x-4
-        .avatar
-          .w-12.rounded-full.ring.ring-primary.ring-offset-base-100.ring-offset-2
-            img(:src="avatarUrl")
-
-        p.font-bold
-          | Alexei
-          br
-          | Myshkouski
-    nav.space-y-4
-      header.footer-title Links
-      .grid.grid-flow-col.gap-4.text-xl
-        NuxtLink(v-for="link in socialLinks" :to="link.url" target="_blank" rel="external")
-          Icon(:name="link.icon" size="1.75rem")
+  .flex-1.bg-base-200
+    footer.footer.p-12.text-neutral-content
+      .container.m-auto.flex.justify-between.px-4
+        aside.space-y-4
+          header.footer-title DEVELOPED BY
+          ClientOnly
+            GithubRepoDeveloper(:profile="githubProfile")
+          DevOnly
+            p githubProfileState: {{ githubProfileState }}
+            p githubRepoState: {{ githubRepoState }}
+        nav.space-y-4
+          header.footer-title Social
+          .grid.grid-flow-col.gap-4.text-xl
+            NuxtLink(v-for="link in socialLinks" :to="link.url" target="_blank" rel="external")
+              Icon(:name="link.icon" size="1.75rem")
 
 </template>
 
@@ -33,17 +31,44 @@ interface SocialLink {
   icon: string
 }
 
-const avatarUrl = ref("https://avatars.githubusercontent.com/myshkouski")
+const githubRepoName = computed(() => "Myshkouski/noads-sticker-generator")
+const githubRepoState = useGithubRepo(githubRepoName)
+const { state: githubRepo } = githubRepoState
 
-const socialLinks: SocialLink[] = [
-  {
-    url: "https://github.com/Myshkouski/noads-sticker-generator",
+const githubRepoOwner = computed(() => {
+  return unref(githubRepo)?.owner
+})
+const githubRepoOwnerLogin = computed(() => {
+  const login = unref(githubRepoOwner)?.login
+  console.debug( "login: " + login)
+  return login
+})
+
+const githubProfileState = useGithubProfile(githubRepoOwnerLogin)
+const { state: githubProfile } = githubProfileState
+
+const githubProjectHtmlUrl = computed(() => {
+  const githubProjectValue = unref(githubRepo)
+  if (!githubProjectValue) return null
+  const value: SocialLink = {
+    url: githubProjectValue.html_url,
     icon: "cib:github"
-  },
-  {
-    url: "https://t.me/alexeimyshkouski",
-    icon: "akar-icons:telegram-fill"
   }
-]
+  return value
+})
+
+const telegramLink = ref<SocialLink>({
+  url: "https://t.me/alexeimyshkouski",
+  icon: "akar-icons:telegram-fill"
+})
+
+const socialLinks = computed(() => {
+  const links = [
+    unref(githubProjectHtmlUrl),
+    unref(telegramLink)
+  ].filter(link => !!link) as SocialLink[]
+
+  return links
+})
 
 </script>
