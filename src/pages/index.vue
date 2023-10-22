@@ -260,7 +260,7 @@ body > div:last-child > span + img {
   top: 0
   width: 0
   height: 100%
-  box-shadow: 0rem 0px theme('spacing.4') theme('spacing.4') hsl(var(--b1))
+  box-shadow: 0rem 0px theme('padding.2') theme('padding.2') hsl(var(--b1))
 
 .carousel-wrapper::before
   @include carousel-shadow
