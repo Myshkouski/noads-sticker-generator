@@ -1,20 +1,21 @@
 <template lang="pug">
 
-.py-24(class="md:container md:m-auto")
-  .hero.justify-start.py-12
-    .hero-content
-      .space-y-16
-        .space-y-8
-          h1.text-4xl NO ADS STICKER
-          p.text-lg A way to ask not to spam with advertisements
+.py-24(class="md:container md:m-auto md:px-4")
+  //- div
+  .grid.gap-8(class="max-xl:auto-cols-fr xl:grid-cols-[min-content_min-content] xl:justify-between")
+    .hero.justify-start.py-12(class="xl:col-span-full")
+      .hero-content
+        .space-y-16
+          .space-y-8
+            h1.text-4xl NO ADS STICKER
+            p.text-lg A way to ask not to spam with advertisements
 
-  .space-y-8.text-base-content.m-auto
-    div 
-      .py-12.space-y-8
+    div(class="xl:order-2")
+      .py-12.space-y-8(class="xl:py-0")
         //- h3.px-4.text-2xl Preview
         .w-full.relative.carousel-wrapper.overflow-hidden
-          .carousel.space-x-4.max-w-full
-            .px-4
+          .space-x-4.max-w-full(class="max-md:carousel")
+            .px-4(class="xl:px-0")
               .shadow-xl.rounded-2xl.join(ref="sticker" class="w-[44em]")
                 .join-item.p-8.flex.flex-col.justify-end.transition-colors(:class="bgColorClass")
                   p.text-4xl.text-white
@@ -31,8 +32,7 @@
                       | стикер
                     img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode" alt="QR Code")
               
-    div
-      .space-y-16
+    .space-y-16(class="xl:order-1 md:max-w-xl")
         .space-y-8
           //- h3.px-4.text-2xl Customize
           .space-y-4.w-full
@@ -40,7 +40,7 @@
               h3.text-xl Color
               span.text-xl.text-slate-500 {{ activeColor }}
             .w-full.relative.carousel-wrapper.overflow-hidden
-              .max-w-full.carousel.space-x-4.px-4
+              .max-w-full.space-x-4.px-4(class="max-md:carousel md:flex")
                 .my-2(v-for="color in colors" :key="color")
                   button.btn-circle.shadow-xl(
                     :class="' ring ring-offset-2 ring-offset-base-100 hover:ring-neutral hover:ring-offset-4 transition-all ' + getColorClass('bg', color, activeColorVariant) + (activeColor == color ? ' ring-neutral ' : ' ring-transparent ')"
@@ -50,7 +50,7 @@
             .flex.justify-between.items-center
               h3.text-xl Color variant
               span.text-xl.text-slate-500 {{ activeColorVariant }}
-            div.max-w-none(class="md:max-w-lg")
+            div
               input.range(
                 type="range" 
                 name="colorVariant" 
@@ -252,7 +252,6 @@ body > div:last-child > span + img {
 </style>
 
 <style scoped lang="sass">
-
 @mixin carousel-shadow
   content: ""
   display: block
@@ -269,7 +268,7 @@ body > div:last-child > span + img {
   @include carousel-shadow
   right: 0
 
-@screen md 
+@screen md
   .carousel-wrapper
     &::before, &::after
       visibility: hidden
