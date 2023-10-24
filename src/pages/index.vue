@@ -1,14 +1,13 @@
 <template lang="pug">
 
 .py-24(class="md:container md:m-auto md:px-4")
-  //- div
   .grid.gap-8(class="max-xl:auto-cols-fr xl:grid-cols-[min-content_min-content] xl:justify-between")
     .hero.justify-start.py-12(class="xl:col-span-full")
       .hero-content
         .space-y-16
           .space-y-8
-            h1.text-4xl NO ADS STICKER
-            p.text-lg A way to ask not to spam with advertisements
+            h1.text-4xl {{ title }}
+            p.text-lg {{ description }}
 
     div(class="xl:order-2")
       .py-12.space-y-8(class="xl:py-0")
@@ -21,7 +20,6 @@
               
     .space-y-16(class="xl:order-1 md:max-w-xl")
         .space-y-8
-          //- h3.px-4.text-2xl Customize
           .space-y-4.w-full
             .flex.justify-between.items-center.px-4
               h3.text-xl Color
@@ -100,6 +98,10 @@ const renderCanvas = async (el: HTMLElement) => {
 
 const renderImage = (canvas: HTMLCanvasElement) => canvas.toDataURL("image/png")
 
+const generateFilename = () => {
+  return `noads-sticker-${activeColor.value}-${activeColorVariant.value}.png`
+}
+
 const downloadAsync = async () => {
   const stickerHtmlElement = unref(sticker)
   if (!stickerHtmlElement) return
@@ -109,14 +111,14 @@ const downloadAsync = async () => {
   const linkSource = imageUri;
   const downloadLink = document.createElement("a");
   downloadLink.href = linkSource;
-  downloadLink.download = 'sticker.png';
+  downloadLink.download = generateFilename();
   downloadLink.click();
 }
 
-const onDownload = () => downloadAsync().catch(console.error)
+const onDownload = () => downloadAsync().catch(printError)
 
-const colors = ['rose', 'yellow', 'lime', 'emerald', 'indigo', 'purple', 'gray']
-const colorVariants = [400, 500, 600, 700, 800]
+const colors = useTailwindPrimaryColors()
+const colorVariants = useTailwindColorVariants()
 
 const activeColor = ref(colors[0])
 const activeColorVariant = ref(600)
@@ -125,7 +127,7 @@ const { vibrate, stop: stopVibrate, isSupported: isVibrateSupported } = useVibra
 
 onMounted(() => {
   watch([activeColor, activeColorVariant], () => {
-    if (isVibrateSupported) {
+    if (isVibrateSupported.value) {
       stopVibrate()
       vibrate(100)
     }
@@ -133,8 +135,12 @@ onMounted(() => {
 })
 
 const { share, isSupported: isShareSupported } = useShare()
+// const { share } = useShare()
+// const isShareSupported = computed(() => true)
 
-const onShare = async () => {
+const onShare = () => onShareAsync().catch(printError)
+
+const onShareAsync = async () => {
   if (!isShareSupported) return
 
   const stickerHtmlElement = unref(sticker)
@@ -142,10 +148,11 @@ const onShare = async () => {
   const canvas = await renderCanvas(stickerHtmlElement)
   const imageUri = renderImage(canvas)
   
-  const file = dataURLtoFile(imageUri, 'noads-sticker.jpg')
+  const filename = generateFilename()
+  const file = await dataUrlToFile(imageUri, filename)
 
   share({
-    title: 'No Ads Sticker',
+    title: filename,
     files: [file],
   })
 }
@@ -171,15 +178,7 @@ const useColorClass = (
 
 const text = ref("ПОЖАЛУЙСТА,\nНЕ КЛАДИТЕ РЕКЛАМНЫЕ ГАЗЕТЫ И ЛИСТОВКИ")
 
-const textColorClass = useColorClass('text', activeColor, activeColorVariant)
-const secondaryTextColorClass = computed(() => {
-  return unref(activeColorVariant) < 500
-    ? 'text-gray-900'
-    : 'text-gray-100'
-})
-
 const primaryColor = useTailwindColor(activeColor, activeColorVariant)
-const bgColorClass = useColorClass('bg', activeColor, activeColorVariant)
 const borderColorClass = useColorClass('border', activeColor, activeColorVariant)
 
 const hexActiveColorGradientFrom = useTailwindColor(activeColor, colorVariants.at(0))
@@ -205,30 +204,6 @@ const hexActiveColor = computed(() => {
   const colorVariant = colorVariants[activeColorVariantValue] || null
   return colorVariant
 })
-
-const hslActiveColor = computed(() => {
-  const hexActiveColorValue = unref(hexActiveColor)
-  if (!hexActiveColorValue) return null
-  const { h, s, l } = hexToHSL(hexActiveColorValue)
-  return [
-    h * 360, 
-    s * 100 + '%',
-    l * 100 + '%', 
-  ].join(' ')
-})
-
-const dataURLtoFile = (dataUrl: string, filename: string) => {
-  const arr = dataUrl.split(',')
-  const mime = arr[0]?.match(/:(.*?);/)?.[1]
-  const bstr = atob(arr[arr.length - 1])
-  let n = bstr.length
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new File([u8arr], filename, { type: mime });
-}
-
 </script>
 
 <style>
@@ -268,11 +243,10 @@ body > div:last-child > span + img {
 input[type=range]::-webkit-slider-runnable-track {
   appearance: none;
   background: linear-gradient(to right, v-bind(hexActiveColorGradientFrom), v-bind(hexActiveColorGradientTo));
-  /* --range-shdw: v-bind(hslActiveColor); */
   transition: all .5s;
 }
 
-input[type='range']::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
   appearance: none;
   background-color: v-bind(hexActiveColor);
   transition: all .5s;
