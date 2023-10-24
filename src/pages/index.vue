@@ -1,14 +1,13 @@
 <template lang="pug">
 
 .py-24(class="md:container md:m-auto md:px-4")
-  //- div
   .grid.gap-8(class="max-xl:auto-cols-fr xl:grid-cols-[min-content_min-content] xl:justify-between")
     .hero.justify-start.py-12(class="xl:col-span-full")
       .hero-content
         .space-y-16
           .space-y-8
-            h1.text-4xl NO ADS STICKER
-            p.text-lg A way to ask not to spam with advertisements
+            h1.text-4xl {{ title }}
+            p.text-lg {{ description }}
 
     div(class="xl:order-2")
       .py-12.space-y-8(class="xl:py-0")
@@ -16,42 +15,23 @@
         .w-full.relative.carousel-wrapper.overflow-hidden
           .space-x-4.max-w-full(class="max-md:carousel")
             .px-4(class="xl:px-0")
-              .shadow-xl.rounded-2xl.join(ref="sticker" class="w-[44em]")
-                .join-item.p-8.flex.flex-col.justify-end.transition-colors(:class="bgColorClass")
-                  p.text-4xl.text-white
-                    | NO
-                    br
-                    | ADS
-                .join-item.p-8.bg-white
-                  p.text-4xl.transition-colors(:class="textColorClass" style="white-space: pre-wrap")  {{ text }}
-                .join-item.p-8.flex.flex-col.justify-end.bg-white
-                  .space-y-2(class="min-w-[6rem]" :class="{ 'opacity-0': !qrCode }")
-                    p.text-center.text-sm.text-primary-content
-                      | создать
-                      br
-                      | стикер
-                    img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode" alt="QR Code")
+              div(ref="sticker")
+                StickerPreview(:text="text" :link="qrCodeLink" :primary-color="primaryColor")
               
     .space-y-16(class="xl:order-1 md:max-w-xl")
         .space-y-8
-          //- h3.px-4.text-2xl Customize
           .space-y-4.w-full
             .flex.justify-between.items-center.px-4
               h3.text-xl Color
               span.text-xl.text-slate-500 {{ activeColor }}
-            .w-full.relative.carousel-wrapper.overflow-hidden
-              .max-w-full.space-x-4.px-4(class="max-md:carousel md:flex")
-                .my-2(v-for="color in colors" :key="color")
-                  button.btn-circle.shadow-xl(
-                    :class="' ring ring-offset-2 ring-offset-base-100 hover:ring-neutral hover:ring-offset-4 transition-all ' + getColorClass('bg', color, activeColorVariant) + (activeColor == color ? ' ring-neutral ' : ' ring-transparent ')"
-                    @click="activeColor = color"
-                  )
+            ColorSwitcher(:colors="colors" v-model:active-color="activeColor" :active-color-variant="activeColorVariant")
           .space-y-4.px-4
             .flex.justify-between.items-center
               h3.text-xl Color variant
               span.text-xl.text-slate-500 {{ activeColorVariant }}
             div
               input.range(
+                class="max-md:range-lg"
                 type="range" 
                 name="colorVariant" 
                 :min="min" :step="step" :max="max" 
@@ -81,21 +61,34 @@
             h3.text-lg Supported APIs:
             p WebShare API: {{ isShareSupported }}
             p Vibrate API: {{ isVibrateSupported }}
+
 </template>
 
 <script setup lang="ts">
 import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
 
+const title = ref("NO ADS STICKER GENERATOR")
+const description = ref("A way to ask not to spam with advertisements")
+
+useSeoMeta({
+  title,
+  description
+})
+
 const { data: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
 
-const qrCodeLink = computed(() => {
+const qrCodeHref = computed(() => {
   const post = unref(qrCodeLinkPost)
   const link = post?.content
   return link
 })
 
-const qrCode = useQrCode(qrCodeLink)
+const qrCodeLink = computed(() => {
+  const href = unref(qrCodeHref)
+  if (!href) return null
+  return { href, text: "создать свой" }
+})
 
 const sticker = ref<HTMLElement>()
 
@@ -104,6 +97,10 @@ const renderCanvas = async (el: HTMLElement) => {
 }
 
 const renderImage = (canvas: HTMLCanvasElement) => canvas.toDataURL("image/png")
+
+const generateFilename = () => {
+  return `noads-sticker-${activeColor.value}-${activeColorVariant.value}.png`
+}
 
 const downloadAsync = async () => {
   const stickerHtmlElement = unref(sticker)
@@ -114,14 +111,14 @@ const downloadAsync = async () => {
   const linkSource = imageUri;
   const downloadLink = document.createElement("a");
   downloadLink.href = linkSource;
-  downloadLink.download = 'sticker.png';
+  downloadLink.download = generateFilename();
   downloadLink.click();
 }
 
-const onDownload = () => downloadAsync().catch(console.error)
+const onDownload = () => downloadAsync().catch(printError)
 
-const colors = ['rose', 'yellow', 'lime', 'emerald', 'indigo', 'purple', 'gray']
-const colorVariants = [400, 500, 600, 700, 800]
+const colors = useTailwindPrimaryColors()
+const colorVariants = useTailwindColorVariants()
 
 const activeColor = ref(colors[0])
 const activeColorVariant = ref(600)
@@ -130,7 +127,7 @@ const { vibrate, stop: stopVibrate, isSupported: isVibrateSupported } = useVibra
 
 onMounted(() => {
   watch([activeColor, activeColorVariant], () => {
-    if (isVibrateSupported) {
+    if (isVibrateSupported.value) {
       stopVibrate()
       vibrate(100)
     }
@@ -138,8 +135,12 @@ onMounted(() => {
 })
 
 const { share, isSupported: isShareSupported } = useShare()
+// const { share } = useShare()
+// const isShareSupported = computed(() => true)
 
-const onShare = async () => {
+const onShare = () => onShareAsync().catch(printError)
+
+const onShareAsync = async () => {
   if (!isShareSupported) return
 
   const stickerHtmlElement = unref(sticker)
@@ -147,10 +148,11 @@ const onShare = async () => {
   const canvas = await renderCanvas(stickerHtmlElement)
   const imageUri = renderImage(canvas)
   
-  const file = dataURLtoFile(imageUri, 'noads-sticker.jpg')
+  const filename = generateFilename()
+  const file = await dataUrlToFile(imageUri, filename)
 
   share({
-    title: 'No Ads Sticker',
+    title: filename,
     files: [file],
   })
 }
@@ -176,25 +178,10 @@ const useColorClass = (
 
 const text = ref("ПОЖАЛУЙСТА,\nНЕ КЛАДИТЕ РЕКЛАМНЫЕ ГАЗЕТЫ И ЛИСТОВКИ")
 
-const textColorClass = useColorClass('text', activeColor, activeColorVariant)
-const secondaryTextColorClass = computed(() => {
-  return unref(activeColorVariant) < 500
-    ? 'text-gray-900'
-    : 'text-gray-100'
-})
-const bgColorClass = useColorClass('bg', activeColor, activeColorVariant)
+const primaryColor = useTailwindColor(activeColor, activeColorVariant)
 const borderColorClass = useColorClass('border', activeColor, activeColorVariant)
 
-const hexActiveColorGradientFrom = computed(() => {
-  const activeColorValue = unref(activeColor)
-  const color = { ...tailwindColors }[activeColorValue];
-  if (!color) return null
-  if (typeof color == 'string') return color
-  const colorVariant = colorVariants.at(0)
-  if (!colorVariant) return null
-  const twColorVariants = ({ ...color } as { [key: number]: string })
-  return twColorVariants[colorVariant];
-})
+const hexActiveColorGradientFrom = useTailwindColor(activeColor, colorVariants.at(0))
 
 const hexActiveColorGradientTo = computed(() => {
   const activeColorValue = unref(activeColor)
@@ -217,30 +204,6 @@ const hexActiveColor = computed(() => {
   const colorVariant = colorVariants[activeColorVariantValue] || null
   return colorVariant
 })
-
-const hslActiveColor = computed(() => {
-  const hexActiveColorValue = unref(hexActiveColor)
-  if (!hexActiveColorValue) return null
-  const { h, s, l } = hexToHSL(hexActiveColorValue)
-  return [
-    h * 360, 
-    s * 100 + '%',
-    l * 100 + '%', 
-  ].join(' ')
-})
-
-const dataURLtoFile = (dataUrl: string, filename: string) => {
-  const arr = dataUrl.split(',')
-  const mime = arr[0]?.match(/:(.*?);/)?.[1]
-  const bstr = atob(arr[arr.length - 1])
-  let n = bstr.length
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new File([u8arr], filename, { type: mime });
-}
-
 </script>
 
 <style>
@@ -280,11 +243,10 @@ body > div:last-child > span + img {
 input[type=range]::-webkit-slider-runnable-track {
   appearance: none;
   background: linear-gradient(to right, v-bind(hexActiveColorGradientFrom), v-bind(hexActiveColorGradientTo));
-  /* --range-shdw: v-bind(hslActiveColor); */
   transition: all .5s;
 }
 
-input[type='range']::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
   appearance: none;
   background-color: v-bind(hexActiveColor);
   transition: all .5s;

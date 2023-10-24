@@ -12,7 +12,7 @@
         //- .w-full.flex.justify-between.px-4
         .w-full.grid.gap-x-8.gap-y-4(class="grid-cols-[1fr_min-content]")
           header.footer-title.self-start Social
-          header.footer-title.self-start DEVELOPED BY
+          header.footer-title.self-start Developer
           //- DevOnly
             p githubProfileState: {{ githubProfileState }}
             p githubRepoState: {{ githubRepoState }}
