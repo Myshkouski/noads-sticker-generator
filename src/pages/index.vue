@@ -26,13 +26,7 @@
             .flex.justify-between.items-center.px-4
               h3.text-xl Color
               span.text-xl.text-slate-500 {{ activeColor }}
-            .w-full.relative.carousel-wrapper.overflow-hidden
-              .max-w-full.space-x-4.px-4(class="max-md:carousel md:flex")
-                .my-2(v-for="color in colors" :key="color")
-                  button.btn-circle.shadow-xl(
-                    :class="' ring ring-offset-2 ring-offset-base-100 hover:ring-neutral hover:ring-offset-4 transition-all ' + getColorClass('bg', color, activeColorVariant) + (activeColor == color ? ' ring-neutral ' : ' ring-transparent ')"
-                    @click="activeColor = color"
-                  )
+            ColorSwitcher(:colors="colors" v-model:active-color="activeColor" :active-color-variant="activeColorVariant")
           .space-y-4.px-4
             .flex.justify-between.items-center
               h3.text-xl Color variant
