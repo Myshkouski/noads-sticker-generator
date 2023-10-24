@@ -70,6 +70,14 @@
 import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
 
+const title = ref("NO ADS STICKER GENERATOR")
+const description = ref("A way to ask not to spam with advertisements")
+
+useSeoMeta({
+  title,
+  description
+})
+
 const { data: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
 
 const qrCodeHref = computed(() => {
