@@ -118,7 +118,7 @@ const downloadAsync = async () => {
 const onDownload = () => downloadAsync().catch(printError)
 
 const colors = useTailwindPrimaryColors()
-const colorVariants = useTailwindColorVariants()
+const colorVariants = useTailwindPrimaryColorVariants()
 
 const activeColor = ref(colors[0])
 const activeColorVariant = ref(600)
