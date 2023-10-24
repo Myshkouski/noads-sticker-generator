@@ -11,7 +11,7 @@
   .sticker-share.join-item.p-8.flex.flex-col.justify-end.bg-white
     .space-y-2(class="min-w-[6rem]" :class="{ 'opacity-0': !qrCode }")
       p.text-center.text-sm.text-primary-content(v-if="linkText") {{ linkText }}
-      img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode" alt="QR Code")
+      img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode ?? undefined" :alt="linkHref")
 
 </template>
 
