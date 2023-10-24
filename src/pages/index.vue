@@ -16,21 +16,8 @@
         .w-full.relative.carousel-wrapper.overflow-hidden
           .space-x-4.max-w-full(class="max-md:carousel")
             .px-4(class="xl:px-0")
-              .shadow-xl.rounded-2xl.join(ref="sticker" class="w-[44em]")
-                .join-item.p-8.flex.flex-col.justify-end.transition-colors(:class="bgColorClass")
-                  p.text-4xl.text-white
-                    | NO
-                    br
-                    | ADS
-                .join-item.p-8.bg-white
-                  p.text-4xl.transition-colors(:class="textColorClass" style="white-space: pre-wrap")  {{ text }}
-                .join-item.p-8.flex.flex-col.justify-end.bg-white
-                  .space-y-2(class="min-w-[6rem]" :class="{ 'opacity-0': !qrCode }")
-                    p.text-center.text-sm.text-primary-content
-                      | создать
-                      br
-                      | стикер
-                    img.m-auto.rounded-lg.overflow-hidden.border-2.border-black(:src="qrCode" alt="QR Code")
+              div(ref="sticker")
+                StickerPreview(:text="text" :link="qrCodeLink" :primary-color="primaryColor")
               
     .space-y-16(class="xl:order-1 md:max-w-xl")
         .space-y-8
@@ -82,6 +69,7 @@
             h3.text-lg Supported APIs:
             p WebShare API: {{ isShareSupported }}
             p Vibrate API: {{ isVibrateSupported }}
+
 </template>
 
 <script setup lang="ts">
@@ -90,13 +78,17 @@ import html2canvas from 'html2canvas'
 
 const { data: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
 
-const qrCodeLink = computed(() => {
+const qrCodeHref = computed(() => {
   const post = unref(qrCodeLinkPost)
   const link = post?.content
   return link
 })
 
-const qrCode = useQrCode(qrCodeLink)
+const qrCodeLink = computed(() => {
+  const href = unref(qrCodeHref)
+  if (!href) return null
+  return { href, text: "создать свой" }
+})
 
 const sticker = ref<HTMLElement>()
 
@@ -183,19 +175,12 @@ const secondaryTextColorClass = computed(() => {
     ? 'text-gray-900'
     : 'text-gray-100'
 })
+
+const primaryColor = useTailwindColor(activeColor, activeColorVariant)
 const bgColorClass = useColorClass('bg', activeColor, activeColorVariant)
 const borderColorClass = useColorClass('border', activeColor, activeColorVariant)
 
-const hexActiveColorGradientFrom = computed(() => {
-  const activeColorValue = unref(activeColor)
-  const color = { ...tailwindColors }[activeColorValue];
-  if (!color) return null
-  if (typeof color == 'string') return color
-  const colorVariant = colorVariants.at(0)
-  if (!colorVariant) return null
-  const twColorVariants = ({ ...color } as { [key: number]: string })
-  return twColorVariants[colorVariant];
-})
+const hexActiveColorGradientFrom = useTailwindColor(activeColor, colorVariants.at(0))
 
 const hexActiveColorGradientTo = computed(() => {
   const activeColorValue = unref(activeColor)
