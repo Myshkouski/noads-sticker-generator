@@ -52,6 +52,7 @@
               span.text-xl.text-slate-500 {{ activeColorVariant }}
             div
               input.range(
+                class="max-md:range-lg"
                 type="range" 
                 name="colorVariant" 
                 :min="min" :step="step" :max="max" 
