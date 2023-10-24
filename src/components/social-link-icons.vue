@@ -1,9 +1,9 @@
 <template lang="pug">
 
-.space-x-4.flex
+.space-x-6.flex
   div(v-for="link in links")
     NuxtLink(:to="link.url" target="_blank" rel="external")
-      Icon.text-4xl.rounded-full.ring.ring-neutral.ring-offset-base-100.ring-offset-2(:name="link.icon" class="hover:ring-offset-4 transition-all")
+      Icon.text-4xl.rounded-full.ring.ring-neutral-content.ring-offset-base-100.ring-offset-2(:name="link.icon" class="hover:ring-offset-4 transition-all")
 
 </template>
 
