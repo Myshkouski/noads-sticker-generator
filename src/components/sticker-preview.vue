@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-
 interface Link {
   readonly href: string
   readonly text?: Nullable<string>
@@ -28,12 +27,13 @@ const props = defineProps({
     required: true,
   },
   link: {
-    type: Object as PropType<Link>,
+    type: Object as PropType<Nullable<Link>>,
     required: false,
   },
   primaryColor: {
-    type: String,
-    required: true,
+    type: String as PropType<Nullable<string>>,
+    required: false,
+    default: "unset"
   },
 })
 const linkHref = computed(() => props.link?.href)
