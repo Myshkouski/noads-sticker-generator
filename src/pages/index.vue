@@ -29,6 +29,8 @@
             .flex.justify-between.items-center
               h3.text-xl Color variant
               span.text-xl.text-slate-500 {{ activeColorVariant }}
+            DevOnly
+              p colors: {{ steps }}
             div
               input.range(
                 class="max-md:range-lg"
@@ -159,7 +161,7 @@ const onShareAsync = async () => {
 
 const step = ref(100)
 const steps = ref(colorVariants.length - 1)
-const min = ref(300)
+const min = ref(colorVariants.at(0) as number)
 const max = computed(() => unref(steps) * unref(step) + unref(min))
 
 type ColorType = 'bg' | 'text' | 'border'
