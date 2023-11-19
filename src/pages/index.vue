@@ -121,7 +121,7 @@ const colors = useTailwindPrimaryColors()
 const colorVariants = useTailwindPrimaryColorVariants()
 
 const activeColor = ref(colors[0])
-const activeColorVariant = ref(600)
+const activeColorVariant = ref(500)
 
 const { vibrate, stop: stopVibrate, isSupported: isVibrateSupported } = useVibrate()
 
