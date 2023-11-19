@@ -1,4 +1,4 @@
-import { Databases, Models } from "appwrite"
+import { Databases, type Models } from "appwrite"
 
 const publicDatabaseId = '653228af20b86d1c5c21'
 const postsCollectionId = '65323511079d11974c4a'
