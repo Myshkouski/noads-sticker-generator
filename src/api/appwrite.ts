@@ -9,10 +9,12 @@ export interface Post extends Models.Document {
 }
 
 export const fetchPost = async (databases: Databases, postId: string) => {
+  console.debug("fetchPost()", "postId:", postId)
   return await databases.getDocument<Post>(publicDatabaseId, postsCollectionId, postId)
 }
 
 const findPublishedPosts = async (databases: Databases, queries: string[]) => {
+  console.debug("findPublishedPosts()", "queries:", queries)
   return await databases.listDocuments<Post>(publicDatabaseId, postsCollectionId, queries)
 }
 

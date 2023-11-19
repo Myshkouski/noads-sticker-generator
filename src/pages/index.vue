@@ -14,7 +14,7 @@
         //- h3.px-4.text-2xl Preview
         .w-full.relative.carousel-wrapper.overflow-hidden
           .space-x-4.max-w-full(class="max-md:carousel")
-            .px-4(class="xl:px-0")
+            .px-4
               div(ref="sticker")
                 StickerPreview(:text="labelTitle" :link="qrCodeLink" :primary-color="primaryColor")
               
@@ -68,17 +68,20 @@
 import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
 
-const locales = ref(['en'])
+const locales = () => [...new Set(['en'])]
 
-const title = ref("NO ADS STICKER GENERATOR")
-const description = ref("A way to ask not to spam with advertisements")
+const { state: titlePost } = useLocalizedPost('title', locales)
+const title = usePostContent(titlePost)
+
+const { state: subtitlePost } = useLocalizedPost('subtitle', locales)
+const description = usePostContent(subtitlePost)
 
 useSeoMeta({
   title,
   description
 })
 
-const { data: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
+const { state: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
 
 const qrCodeLinkHref = computed(() => {
   const post = unref(qrCodeLinkPost)
@@ -86,7 +89,7 @@ const qrCodeLinkHref = computed(() => {
   return link
 })
 
-const { data: qrCodeLinkText } = useLocalizedPost('short-link-description', locales)
+const { state: qrCodeLinkText } = useLocalizedPost('short-link-description', locales)
 
 const qrCodeLink = computed(() => {
   const href = unref(qrCodeLinkHref)
@@ -162,10 +165,10 @@ const onShareAsync = async () => {
   })
 }
 
-const step = ref(100)
-const steps = ref(colorVariants.length - 1)
-const min = ref(colorVariants.at(0) as number)
-const max = computed(() => unref(steps) * unref(step) + unref(min))
+const step = 100
+const steps = colorVariants.length - 1
+const min = colorVariants.at(0) as number
+const max = computed(() => toValue(steps) * toValue(step) + unref(min))
 
 type ColorType = 'bg' | 'text' | 'border'
 
@@ -181,9 +184,8 @@ const useColorClass = (
   colorVariant: MaybeRef<number>,
 ) => computed(() => getColorClass(unref(type), unref(color), unref(colorVariant)))
 
-const { data: labelTitlePost } = useLocalizedPost('label-title', locales)
-// const text = ref("ПОЖАЛУЙСТА,\nНЕ КЛАДИТЕ РЕКЛАМНЫЕ ГАЗЕТЫ И ЛИСТОВКИ")
-const labelTitle = computed(() => toValue(labelTitlePost)?.content ?? "")
+const { state: labelTitlePost } = useLocalizedPost('label-title', locales)
+const labelTitle = usePostContent(labelTitlePost)
 
 const primaryColor = useTailwindColor(activeColor, activeColorVariant)
 const borderColorClass = useColorClass('border', activeColor, activeColorVariant)
