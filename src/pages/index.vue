@@ -16,7 +16,7 @@
           .space-x-4.max-w-full(class="max-md:carousel")
             .px-4(class="xl:px-0")
               div(ref="sticker")
-                StickerPreview(:text="text" :link="qrCodeLink" :primary-color="primaryColor")
+                StickerPreview(:text="labelTitle" :link="qrCodeLink" :primary-color="primaryColor")
               
     .space-y-16(class="xl:order-1 md:max-w-xl")
         .space-y-8
@@ -29,8 +29,6 @@
             .flex.justify-between.items-center
               h3.text-xl Color variant
               span.text-xl.text-slate-500 {{ activeColorVariant }}
-            DevOnly
-              p colors: {{ steps }}
             div
               input.range(
                 class="max-md:range-lg"
@@ -61,14 +59,16 @@
         .card.bg-base-300.shadow-xl
           .card-body
             h3.text-lg Supported APIs:
-            p WebShare API: {{ isShareSupported }}
-            p Vibrate API: {{ isVibrateSupported }}
+            p.my-0.py-0 WebShare API: {{ isShareSupported }}
+            p.my-0.py-0 Vibrate API: {{ isVibrateSupported }}
 
 </template>
 
 <script setup lang="ts">
 import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
+
+const locales = ref(['en'])
 
 const title = ref("NO ADS STICKER GENERATOR")
 const description = ref("A way to ask not to spam with advertisements")
@@ -80,16 +80,19 @@ useSeoMeta({
 
 const { data: qrCodeLinkPost } = usePost('65340d948887efee6cd0')
 
-const qrCodeHref = computed(() => {
+const qrCodeLinkHref = computed(() => {
   const post = unref(qrCodeLinkPost)
   const link = post?.content
   return link
 })
 
+const { data: qrCodeLinkText } = useLocalizedPost('short-link-description', locales)
+
 const qrCodeLink = computed(() => {
-  const href = unref(qrCodeHref)
+  const href = unref(qrCodeLinkHref)
   if (!href) return null
-  return { href, text: "создать свой" }
+  const text = toValue(qrCodeLinkText)?.content
+  return { href, text }
 })
 
 const sticker = ref<HTMLElement>()
@@ -123,7 +126,7 @@ const colors = useTailwindPrimaryColors()
 const colorVariants = useTailwindPrimaryColorVariants()
 
 const activeColor = ref(colors[0])
-const activeColorVariant = ref(500)
+const activeColorVariant = ref(600)
 
 const { vibrate, stop: stopVibrate, isSupported: isVibrateSupported } = useVibrate()
 
@@ -178,7 +181,9 @@ const useColorClass = (
   colorVariant: MaybeRef<number>,
 ) => computed(() => getColorClass(unref(type), unref(color), unref(colorVariant)))
 
-const text = ref("ПОЖАЛУЙСТА,\nНЕ КЛАДИТЕ РЕКЛАМНЫЕ ГАЗЕТЫ И ЛИСТОВКИ")
+const { data: labelTitlePost } = useLocalizedPost('label-title', locales)
+// const text = ref("ПОЖАЛУЙСТА,\nНЕ КЛАДИТЕ РЕКЛАМНЫЕ ГАЗЕТЫ И ЛИСТОВКИ")
+const labelTitle = computed(() => toValue(labelTitlePost)?.content ?? "")
 
 const primaryColor = useTailwindColor(activeColor, activeColorVariant)
 const borderColorClass = useColorClass('border', activeColor, activeColorVariant)
