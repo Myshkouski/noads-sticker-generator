@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   app: {
     pageTransition: {
       name: "page",
@@ -13,9 +14,20 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-icon',
     'nuxt-appwrite',
+    '@nuxtjs/i18n',
   ],
   appwrite: {
     endpoint: 'https://cloud.appwrite.io/v1',
     project: '649e961c38e05383c23d',
+  },
+  i18n: {
+    locales: ['en', 'ru'],
+    defaultLocale: 'en',
+    strategy: "prefix",
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "lang",
+      redirectOn: "root",
+    },
   }
 })

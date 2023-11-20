@@ -23,7 +23,7 @@ const props = defineProps({
     default: null
   },
   activeColorVariant: {
-    type: Number as PropType<Nullable<number>>,
+    type: [Number, String] as PropType<Nullable<number | string>>,
     default: null
   },
 })
@@ -35,11 +35,11 @@ interface Button {
   bgColor?: Nullable<string>
 }
 
-const activeColorVariant = computed(() => props.activeColorVariant)
+const activeColorVariant = computed(() => props.activeColorVariant?.toString())
 
 const buttons = computed(() => {
-  const colorVariant = activeColorVariant.value
-  return colors.value.map(color => {
+  const colorVariant = toValue(activeColorVariant)
+  return unref(colors).map(color => {
     const button: Button = { color, bgColor: getTailwindColor(color, colorVariant) }
     return button
   })
