@@ -68,7 +68,15 @@
 import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
 
-const locales = () => [...new Set(['en'])]
+const { locale: currentLocale, defaultLocale } = useI18n()
+
+const locales = computed(() => {
+  const locales = new Set([
+    unref(currentLocale),
+    unref(defaultLocale),
+  ])
+  return [...locales]
+})
 
 const { state: titlePost } = useLocalizedPost('title', locales)
 const title = usePostContent(titlePost)
