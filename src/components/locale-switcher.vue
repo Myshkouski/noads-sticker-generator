@@ -1,7 +1,8 @@
 <template lang="pug">
 
 .join.items-center
-  Icon.shadow--sm.join-item.text-lg(:name="'circle-flags:' + currenLocale")
+  .join-item
+    Icon.text-3xl(:name="'circle-flags:' + currenLocale")
   select.font-semibold.join-item.select.bg-transparent(class="focus:outline-none" @change="onCurrentLocaleChange($event)")
     //- option(v-if="currentLanguageRef" selected disabled :value="currentLanguageRef.code")
       span {{ currentLanguageRef.displayName || getLocaleCodeOrIso(currentLanguageRef) }}
