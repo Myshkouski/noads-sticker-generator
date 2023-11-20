@@ -8,19 +8,20 @@
 
   .flex-1.bg-base-200
     footer.footer.text-neutral-content
-      .px-4.py-12.container.m-auto
+      .px-12.py-12.container.m-auto(class="md:px-4")
         //- .w-full.flex.justify-between.px-4
-        .w-full.grid.gap-x-8.gap-y-4(class="grid-cols-[min-content_1fr_min-content]")
-          header.footer-title.self-start Locale
-          header.footer-title.self-start Social
-          header.footer-title.self-start Developer
+        .w-full.grid(class="md:gap-x-8 md:gap-y-4md:grid-cols-[100%_min-content_min-content]")
           //- DevOnly
             p githubProfileState: {{ githubProfileState }}
             p githubRepoState: {{ githubRepoState }}
-          div
+          .row-span-2(class="md:row-start-1")
             LocaleSwitcher
+          header.footer-title.self-start(class="md:row-start-1 max-md:mt-8 max-md:mb-4")
+            h3 Social
           .self-center
             SocialLinkIcons(:links="socialLinks")
+          header.footer-title.self-start(class="md:row-start-1 max-md:mt-8 max-md:mb-4")
+            h3 Developer
           .self-center
             ClientOnly
               GithubRepoDeveloper(:profile="githubProfile")
