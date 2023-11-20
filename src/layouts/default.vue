@@ -10,12 +10,15 @@
     footer.footer.text-neutral-content
       .px-4.py-12.container.m-auto
         //- .w-full.flex.justify-between.px-4
-        .w-full.grid.gap-x-8.gap-y-4(class="grid-cols-[1fr_min-content]")
+        .w-full.grid.gap-x-8.gap-y-4(class="grid-cols-[min-content_1fr_min-content]")
+          header.footer-title.self-start Locale
           header.footer-title.self-start Social
           header.footer-title.self-start Developer
           //- DevOnly
             p githubProfileState: {{ githubProfileState }}
             p githubRepoState: {{ githubRepoState }}
+          div
+            LocaleSwitcher
           .self-center
             SocialLinkIcons(:links="socialLinks")
           .self-center
