@@ -6,8 +6,8 @@
       .hero-content
         .space-y-16
           .space-y-8
-            h1.text-4xl {{ title }}
-            p.text-lg {{ description }}
+            h1.text-4xl.whitespace-pre-wrap {{ title }}
+            p.text-lg.whitespace-pre-wrap {{ description }}
 
     div(class="xl:order-2")
       .py-12.space-y-8(class="xl:py-0")
