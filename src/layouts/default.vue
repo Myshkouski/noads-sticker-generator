@@ -17,19 +17,29 @@
           .row-span-2(class="md:row-start-1")
             LocaleSwitcher
           header.footer-title.self-start(class="md:row-start-1 max-md:mt-8 max-md:mb-4")
-            h3 Social
+            h3.uppercase {{ t('social') }}
           .self-center
             SocialLinkIcons(:links="socialLinks")
           header.footer-title.self-start(class="md:row-start-1 max-md:mt-8 max-md:mb-4")
-            h3 Developer
+            h3.uppercase {{ t('developer') }}
           .self-center
             ClientOnly
               GithubRepoDeveloper(:profile="githubProfile")
 
 </template>
 
+<i18n lang="yaml">
+
+ru:
+  developer: автор
+  social: соцсети
+
+</i18n>
+
 <script setup lang="ts">
 import type { SocialLink } from '~/models'
+
+const { t } = useI18n({ useScope: "local" })
 
 const githubRepoName = computed(() => "Myshkouski/noads-sticker-generator")
 const githubRepoState = useGithubRepo(githubRepoName)
