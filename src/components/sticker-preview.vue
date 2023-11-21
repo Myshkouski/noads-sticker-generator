@@ -7,7 +7,7 @@
       br
       | ADS
   .sticker-text.join-item.p-8.flex.flex-col.justify-end.flex-1.bg-white
-    p.text-4xl.transition-colors {{ text }}
+    p.text-4xl.transition-colors.whitespace-pre-wrap {{ text }}
   .sticker-share.join-item.p-8.flex.flex-col.justify-end.bg-white
     .space-y-2(class="min-w-[6rem]" :class="{ 'opacity-0': !qrCode }")
       p.text-center.text-sm.text-primary-content(v-if="linkText") {{ linkText }}
@@ -50,5 +50,4 @@ const primaryColor = computed(() => props.primaryColor)
 
 .sticker-text p
   color: v-bind(primaryColor)
-  white-space: pre-wrap
 </style>
