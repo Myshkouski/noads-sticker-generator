@@ -3,10 +3,8 @@ import { fetchRepo, fetchUser } from "~/api/github"
 export const useGithubRepo = (repo: Ref<Nullable<string>>) => {
   const state = useAsyncState(async () => {
     const repoValue = unref(repo)
-    // console.debug("[useGithubRepo]", "repo:", repoValue)
     if (!repoValue) return null
     const response = await fetchRepo(repoValue)
-    // console.trace("[useGithubRepo]", "response:", response)
     return response
   }, null)
 
@@ -20,10 +18,8 @@ export const useGithubRepo = (repo: Ref<Nullable<string>>) => {
 export const useGithubProfile = (login: Ref<Nullable<string>>) => {
   const state = useAsyncState(async () => {
     const loginValue = unref(login)
-    // console.debug("login: " + loginValue)
     if (!loginValue) return null
     const response = await fetchUser(loginValue)
-    // console.trace("response: " + response)
     return response
   }, null)
 

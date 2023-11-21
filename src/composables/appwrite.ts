@@ -17,8 +17,8 @@ export const usePost = (documentId: MaybeRef<string>) => {
 
 export const useLocalizedPost = (key: MaybeRefOrGetter<string>, locales: MaybeRefOrGetter<MayBeArray<string>>) => {
   return useAppwriteDatabaseAsyncData(async database => {
-    const { documents } = await findPublishedPostsByKeyAndLocale(database, toValue(key), toValue(locales))
-    return documents.at(0)
+    const posts = await findPublishedPostsByKeyAndLocale(database, toValue(key), toValue(locales))
+    return posts.at(0)
   })
 }
 
