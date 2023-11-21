@@ -53,7 +53,7 @@
               :class="{ 'btn-outline': isShareSupported, [borderColorClass]: isShareSupported, [getColorClass('bg', activeColor, 600)]: !isShareSupported }"
             ) Download
 
-  DevOnly
+  //- DevOnly
     ClientOnly
       .px-4.my-24
         .card.bg-base-300.shadow-xl
