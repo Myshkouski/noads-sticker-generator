@@ -39,13 +39,9 @@ const capitalize = (value: Nullable<string>) => {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
-const intlDisplayNames = computed(() => {
-  const locales = unref(availableLocales) as string[]
-  return new Intl.DisplayNames(locales, { type: "language" })
-})
-
 const getLanguageName = (locale: string) => {
-  const displayName = unref(intlDisplayNames).of(locale)
+  const intlDisplayNames = new Intl.DisplayNames(locale, { type: "language" })
+  const displayName = intlDisplayNames.of(locale)
   return capitalize(displayName)
 }
 

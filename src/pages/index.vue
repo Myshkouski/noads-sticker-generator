@@ -22,12 +22,12 @@
         .space-y-8
           .space-y-4.w-full
             .flex.justify-between.items-center.px-4
-              h3.text-xl Color
+              h3.text-xl.capitalize {{ t('color') }}
               span.text-xl.text-slate-500 {{ activeColor }}
             ColorSwitcher(:colors="colors" v-model:active-color="activeColor" :active-color-variant="activeColorVariant")
           .space-y-4.px-4
             .flex.justify-between.items-center
-              h3.text-xl Color variant
+              h3.text-xl.capitalize {{ t('colorVariant') }}
               span.text-xl.text-slate-500 {{ activeColorVariant }}
             div
               input.range(
@@ -46,14 +46,14 @@
               @click.prevent="onShare" 
               class="sm:w-auto"
               :class="getColorClass('bg', activeColor, 600)"
-            ) Share
+            ) {{ t('share') }}
             button.btn.px-8.w-full(
               @click.prevent="onDownload" 
               class="sm:w-auto" 
               :class="{ 'btn-outline': isShareSupported, [borderColorClass]: isShareSupported, [getColorClass('bg', activeColor, 600)]: !isShareSupported }"
-            ) Download
+            ) {{ t('download') }}
 
-  DevOnly
+  //- DevOnly
     ClientOnly
       .px-4.my-24
         .card.bg-base-300.shadow-xl
@@ -64,11 +64,22 @@
 
 </template>
 
+<i18n lang="yaml">
+
+ru:
+  share: поделиться
+  download: скачать
+  color: цвет
+  colorVariant: оттенок
+
+</i18n>
+
 <script setup lang="ts">
 import tailwindColors from 'tailwindcss/colors'
 import html2canvas from 'html2canvas'
 
 const { locale: currentLocale, defaultLocale } = useI18n()
+const { t } = useI18n({ useScope: "local" })
 
 const locales = computed(() => {
   const locales = new Set([
