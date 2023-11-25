@@ -29,5 +29,10 @@ export default defineNuxtConfig({
       cookieKey: "lang",
       redirectOn: "root",
     },
+  },
+  runtimeConfig: {
+    public: {
+      googleSiteVerificationToken: ""
+    }
   }
 })
