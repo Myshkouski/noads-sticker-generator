@@ -67,6 +67,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} run generate
         env:
           NUXT_APP_BASE_URL: ${{ steps.detect-baseurl-path.outputs.baseUrlPath }}
+          NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION_TOKEN: ${{ vars.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION_TOKEN }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
