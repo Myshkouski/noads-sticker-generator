@@ -23,6 +23,9 @@ useHead({
   ]
 })
 
+useSeoMeta({
+  googleSiteVerification: useGoogleSiteVerificationToken(),
+})
 </script>
 
 <style>
