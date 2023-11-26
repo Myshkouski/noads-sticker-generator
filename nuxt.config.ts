@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     'nuxt-icon',
     'nuxt-appwrite',
     '@nuxtjs/i18n',
+    'nuxt-gtag',
   ],
   appwrite: {
     endpoint: 'https://cloud.appwrite.io/v1',
