@@ -49,5 +49,8 @@ const emit = defineEmits<{
   (event: "update:activeColor", color: string): void
 }>()
 
-const updateActiveColor = (color: string) => emit("update:activeColor", color)
+const updateActiveColor = (color: string) => {
+  useTrackEvent("color_change", { color })
+  emit("update:activeColor", color)
+}
 </script>
