@@ -8,6 +8,10 @@ NuxtLayout
 </template>
 
 <script setup lang="ts">
+const { href: faviconHref } = useLink({
+  to: "/favicon.svg"
+})
+
 useHead({
   meta: [
     {
@@ -18,7 +22,7 @@ useHead({
   link: [
     {
       rel: "icon",
-      href: "favicon.svg"
+      href: faviconHref
     }
   ]
 })
