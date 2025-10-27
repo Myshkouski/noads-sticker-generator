@@ -70,7 +70,7 @@ jobs:
           NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION_TOKEN: ${{ vars.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION_TOKEN }}
           NUXT_PUBLIC_GTAG_ID: ${{ vars.NUXT_PUBLIC_GTAG_ID }}
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
