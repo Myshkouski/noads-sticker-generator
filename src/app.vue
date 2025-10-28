@@ -12,19 +12,30 @@ const { href: faviconHref } = useLink({
   to: "/favicon.svg"
 })
 
-useHead({
-  meta: [
-    {
-      name: "viewport",
-      content: "width=device-width, initial-scale=1"
-    }
-  ],
-  link: [
-    {
-      rel: "icon",
-      href: faviconHref
-    }
-  ]
+const i18nHead = useLocaleHead({
+  // seo: {}
+})
+
+useHead(() => {
+  return {
+    htmlAttrs: {
+      ...i18nHead.value.htmlAttrs
+    },
+    meta: [
+      ...i18nHead.value.meta,
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1"
+      }
+    ],
+    link: [
+      ...i18nHead.value.link,
+      {
+        rel: "icon",
+        href: faviconHref
+      }
+    ]
+  }
 })
 
 useSeoMeta({
