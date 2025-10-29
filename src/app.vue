@@ -23,10 +23,6 @@ useHead(() => {
     },
     meta: [
       ...i18nHead.value.meta,
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1"
-      }
     ],
     link: [
       ...i18nHead.value.link,
@@ -40,6 +36,10 @@ useHead(() => {
 
 useSeoMeta({
   googleSiteVerification: useGoogleSiteVerificationToken(),
+  viewport: {
+    width: "device-width",
+    initialScale: 1
+  },
 })
 </script>
 
